@@ -5,6 +5,10 @@ set dotenv-load := true
 default:
 	@just --list
 
+# run it!
+r:
+	go run ./...
+
 # watch and run a go file
 watch PATH:
 	ls {{PATH}}/* | entr -c go run {{PATH}}/*.go
