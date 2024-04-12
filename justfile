@@ -7,7 +7,7 @@ default:
 
 # run it!
 r ORG:
-	go run ./main.go -h $REDIS_HOST -p $REDIS_PORT -k seed:{{ ORG }}
+	go run ./main.go -host=$REDIS_HOST -port=$REDIS_PORT -key=seed:{{ ORG }}
 
 # watch and run a go file
 watch PATH:

@@ -12,9 +12,9 @@ import (
 
 func main() {
 	var (
-		rhost = flag.String("h", "localhost", "redis server host")
-		rport = flag.Int("p", 6379, "redis server port")
-		key   = flag.String("k", "seed:yell_e2e_three", "redis key to watch")
+		rhost = flag.String("host", "localhost", "redis server host")
+		rport = flag.Int("port", 6379, "redis server port")
+		key   = flag.String("key", "seed:yell_e2e_three", "redis key to watch")
 	)
 	flag.Parse()
 
