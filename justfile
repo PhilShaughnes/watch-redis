@@ -6,8 +6,8 @@ default:
 	@just --list
 
 # run it!
-r:
-	go run ./...
+r ORG:
+	go run ./main.go -h $REDIS_HOST -p $REDIS_PORT -k seed:{{ ORG }}
 
 # watch and run a go file
 watch PATH:
