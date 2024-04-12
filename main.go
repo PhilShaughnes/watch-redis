@@ -5,55 +5,43 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
-	"os"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
 func main() {
 	var (
-		rhost  = flag.String("rhost", "localhost", "redis server host")
-		rport  = flag.Int("rport", 6379, "redis server port")
-		prefix = flag.String("pre", "seed:", "redis key prefix to watch")
+		rhost = flag.String("h", "localhost", "redis server host")
+		rport = flag.Int("p", 6379, "redis server port")
+		key   = flag.String("k", "seed:yell_e2e_three", "redis key to watch")
 	)
 	flag.Parse()
+
 	redisAddr := fmt.Sprintf("%s:%d", *rhost, *rport)
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	slog.SetDefault(logger)
-
 	rdb := redis.NewClient(&redis.Options{Addr: redisAddr})
-
 	ctx := context.Background()
-	pubsub := rdb.PSubscribe(ctx, fmt.Sprintf("__keyspace@0__:%s", *prefix))
 
-	ch := pubsub.Channel()
-	fmt.Println("hello world")
-	for rmsg := range ch {
-		key := rmsg.Payload
-		val, err := rdb.Get(ctx, key).Result()
-		handleChange(key, val, err)
+	var value string
+	slog.Info("watching key: " + *key)
+	for {
+		res, err := rdb.Get(ctx, *key).Result()
+		if value != res {
+			handleChange(*key, res, err)
+		}
+		value = res
+		time.Sleep(time.Millisecond * 200)
 	}
-
 }
 
 func handleChange(redisKey string, redisVal string, err error) {
-	msg := "Key change"
-
 	if err != nil && err != redis.Nil {
 		slog.Error(
-			msg+": couldn't retrieve",
+			"couldn't retrieve",
 			slog.String("key", redisKey),
 			slog.Any("err", err),
 		)
 		return
 	}
-
-	if err == redis.Nil {
-		msg += ":key deleted"
-	}
-	slog.Info(
-		msg,
-		slog.String("key", redisKey),
-		slog.String("val", redisVal),
-	)
+	slog.Info(fmt.Sprintf("%s::%s", redisKey, redisVal))
 }
