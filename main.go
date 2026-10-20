@@ -16,6 +16,10 @@ func main() {
 		rport = flag.Int("port", 6379, "redis server port")
 		key   = flag.String("key", "seed:yell_e2e_three", "redis key to watch")
 	)
+	flag.Usage = func() {
+		fmt.Printf("Watch a specific redis key and report changes")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 
 	redisAddr := fmt.Sprintf("%s:%d", *rhost, *rport)
